@@ -1,0 +1,106 @@
+﻿@model List<Currency.Valute>
+
+@{
+}
+
+<div>
+	@if (Model != null)
+	{
+		<div class="container">
+			<h4>Выберите количество строк</h4>
+			<div class="form-group">
+				<select name="state" id="maxRows" class="form-control" style="width:150px;">
+					<option value="5000">Show All</option>
+					<option value="5">5</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+
+				</select>
+			</div>
+		</div>
+		<table class="table table-hover" id="mytable">
+			<thead class="thead-dark">
+				<tr>
+					<th scope="col">Валюта</th>
+					<th scope="col">Курс ЦБ</th>
+				</tr>
+			</thead>
+			<tbody>
+
+				@foreach (var item in Model)
+				{
+					<tr>
+						<th>@item.CharCode</th>
+						<th>@item.Value</th>
+					</tr>
+				}
+
+			</tbody>
+		</table>
+		<div class="pagination-container">
+			<nav>
+				<ul class="pagination"></ul>
+			</nav>
+		</div>
+	}
+	else
+	{
+		<h4>@ViewData["Exception"]</h4>
+	}
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+<script charset="utf-8">
+	var table = '#mytable';
+	$("#maxRows").on('change', function () {
+		$(".pagination").html('')
+		var trum = 0;
+		var maxRows = parseInt($(this).val());
+		var totalRows = $(table + ' tbody tr').length;
+		$(table + ' tr:gt(0)').each(function () {
+			trum++;
+			if (trum > maxRows) {
+				$(this).hide();
+			}
+			if (trum <= maxRows) {
+				$(this).show();
+			}
+		});
+		if (totalRows > maxRows) {
+			var pagenum = Math.ceil(totalRows / maxRows);
+			for (var i = 1; i <= pagenum;) {
+				$(".pagination").append('<li class="span btn btn-primary ml-1" data-page="' + i + '">\<span >' + i++ +
+					'<span class="sr-only">(current)</span></span>\</li>').show();
+			}
+		}
+		$(".pagination li:first-child").addClass('active');
+		$(".pagination li").on('click', function () {
+			var pageNum = $(this).attr('data-page');
+			var trIndex = 0;
+			$(".pagination li").removeClass('active');
+			$(this).addClass('active');
+			$(table + ' tr:gt(0)').each(function () {
+				trIndex++;
+				if (trIndex > (maxRows * pageNum) || trIndex <= ((maxRows * pageNum) - maxRows)) {
+					$(this).hide();
+				} else {
+					$(this).show();
+				}
+			});
+		});
+	});
+	$(function () {
+		$('table tr:eq(0)').prepend('<th>ID</th>')
+		var id = 0;
+		$('table tr:gt(0)').each(function () {
+			id++;
+			$(this).prepend('<td>'+ id + '</td>')
+		})
+
+
+	})
+
+</script>
